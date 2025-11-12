@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Findable Labs - AI Search Optimization Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo-section">
+        <div class="logo-icon">F</div>
+        <h1 class="logo-text">Findable Labs</h1>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="workflows">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Workflows</span>
+        </button>
+        <button class="nav-item" data-tab="traffic">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Traffic &amp; Insights</span>
+        </button>
+        <button class="nav-item" data-tab="integrations">
+          <span class="nav-icon">🔗</span>
+          <span class="nav-label">Integrations</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+      
+      <div class="business-info">
+        <div class="business-avatar">BR</div>
+        <div class="business-details">
+          <div class="business-name">Blue Ridge Plumbing</div>
+          <div class="business-location">Denver, Colorado</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Dashboard Tab -->
+      <div class="tab-content active" id="dashboard-tab">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Your AI Search Visibility Dashboard</h2>
+            <p class="page-subtitle">Track how AI search engines are driving traffic to your business</p>
+          </div>
+          <div class="time-selector">
+            <select class="form-control" id="timePeriod">
+              <option value="7d">Last 7 days</option>
+              <option value="30d" selected>Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+              <option value="ytd">Year to date</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pending Approvals Alert -->
+        <div class="alert-box" id="pendingApproval">
+          <div class="alert-content">
+            <span class="alert-icon">⏰</span>
+            <div class="alert-text">
+              <strong>Pending Approval:</strong> We're about to add 8 new FAQs to your website based on customer questions.
+            </div>
+          </div>
+          <div class="alert-actions">
+            <button class="btn btn--sm btn--primary" onclick="handleApproval('approve')">Approve</button>
+            <button class="btn btn--sm btn--outline" onclick="handleApproval('review')">Review</button>
+            <button class="btn btn--sm btn--outline" onclick="handleApproval('decline')">Decline</button>
+          </div>
+        </div>
+
+        <!-- Hero Metric -->
+        <div class="hero-card">
+          <h3 class="metric-label">AI Search Traffic</h3>
+          <div class="metric-value">2,847</div>
+          <div class="metric-subtitle">visits in last 30 days</div>
+          <div class="metric-change positive">
+            <span class="change-icon">↑</span>
+            <span class="change-value">+34%</span>
+            <span class="change-label">vs last month</span>
+          </div>
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="stats-grid">
+          <div class="stat-card" onclick="showDetails('chatgpt')">
+            <div class="stat-header">
+              <span class="stat-icon">🤖</span>
+              <span class="stat-label">ChatGPT Referrals</span>
+            </div>
+            <div class="stat-value">892</div>
+            <div class="stat-detail">3 conversions</div>
+          </div>
+          
+          <div class="stat-card" onclick="showDetails('perplexity')">
+            <div class="stat-header">
+              <span class="stat-icon">🔍</span>
+              <span class="stat-label">Perplexity Referrals</span>
+            </div>
+            <div class="stat-value">445</div>
+            <div class="stat-detail">1 conversion</div>
+          </div>
+          
+          <div class="stat-card" onclick="showDetails('google')">
+            <div class="stat-header">
+              <span class="stat-icon">🔎</span>
+              <span class="stat-label">Google AI Overviews</span>
+            </div>
+            <div class="stat-value">612</div>
+            <div class="stat-detail">2 conversions</div>
+          </div>
+          
+          <div class="stat-card highlight" onclick="showDetails('position')">
+            <div class="stat-header">
+              <span class="stat-icon">🏆</span>
+              <span class="stat-label">Competitive Position</span>
+            </div>
+            <div class="stat-value">3rd</div>
+            <div class="stat-detail">out of 8 local competitors</div>
+          </div>
+        </div>
+
+        <!-- Traffic Trend Chart -->
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Traffic Trend</h3>
+            <span class="card-subtitle">Daily AI search traffic over the last 30 days</span>
+          </div>
+          <div class="card__body">
+            <div class="chart-container">
+              <canvas id="trafficChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Workflows -->
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Active Workflows</h3>
+            <span class="card-subtitle">Automated optimizations running for your business</span>
+          </div>
+          <div class="card__body">
+            <div class="workflows-list" id="dashboardWorkflows"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflows Tab -->
+      <div class="tab-content" id="workflows-tab">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Automation Workflows</h2>
+            <p class="page-subtitle">Manage automated tasks that optimize your AI search presence</p>
+          </div>
+        </div>
+
+        <div class="workflows-grid" id="workflowsGrid"></div>
+      </div>
+
+      <!-- Traffic & Insights Tab -->
+      <div class="tab-content" id="traffic-tab">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Traffic &amp; Insights</h2>
+            <p class="page-subtitle">Detailed analytics and performance metrics</p>
+          </div>
+          <div class="time-selector">
+            <select class="form-control">
+              <option value="7d">Last 7 days</option>
+              <option value="30d" selected>Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+              <option value="ytd">Year to date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="insights-grid">
+          <!-- Platform Breakdown -->
+          <div class="card">
+            <div class="card__header">
+              <h3 class="card-title">Traffic by AI Platform</h3>
+            </div>
+            <div class="card__body">
+              <div class="chart-container" style="height: 300px;">
+                <canvas id="platformChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conversion Funnel -->
+          <div class="card">
+            <div class="card__header">
+              <h3 class="card-title">Conversion Funnel</h3>
+            </div>
+            <div class="card__body">
+              <div class="funnel" id="conversionFunnel"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Queries Table -->
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Top Queries Driving Traffic</h3>
+            <span class="card-subtitle">Searches that bring customers to your business</span>
+          </div>
+          <div class="card__body">
+            <div class="table-container">
+              <table class="data-table" id="queriesTable">
+                <thead>
+                  <tr>
+                    <th>Query</th>
+                    <th>Platform</th>
+                    <th>Visits</th>
+                    <th>Conversions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Competitive Benchmarking -->
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Competitive Benchmarking</h3>
+            <span class="card-subtitle">Your performance vs. local competitors</span>
+          </div>
+          <div class="card__body">
+            <div class="chart-container">
+              <canvas id="competitorChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integrations Tab -->
+      <div class="tab-content" id="integrations-tab">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Integrations</h2>
+            <p class="page-subtitle">Connect platforms to automate AI search optimization</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Connected Integrations</h3>
+          </div>
+          <div class="card__body">
+            <div class="integrations-grid" id="connectedIntegrations"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Available Integrations</h3>
+          </div>
+          <div class="card__body">
+            <div class="integrations-grid" id="availableIntegrations"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div class="tab-content" id="settings-tab">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Settings</h2>
+            <p class="page-subtitle">Configure your account and preferences</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Business Information</h3>
+          </div>
+          <div class="card__body">
+            <div class="form-group">
+              <label class="form-label">Business Name</label>
+              <input type="text" class="form-control" value="Blue Ridge Plumbing" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input type="text" class="form-control" value="Denver, Colorado" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Website</label>
+              <input type="text" class="form-control" value="www.blueridgeplumbing.com" disabled>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <h3 class="card-title">Notification Preferences</h3>
+          </div>
+          <div class="card__body">
+            <div class="setting-item">
+              <div>
+                <strong>Workflow Approvals</strong>
+                <p class="setting-description">Get notified when workflows need approval</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div>
+                <strong>Weekly Reports</strong>
+                <p class="setting-description">Receive weekly performance summaries</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div>
+                <strong>Traffic Alerts</strong>
+                <p class="setting-description">Alert when traffic spikes or drops significantly</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Workflow Details -->
+  <div class="modal" id="workflowModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Workflow Details</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn--outline" onclick="closeModal()">Close</button>
+        <button class="btn btn--primary" onclick="closeModal()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
